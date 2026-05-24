@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru" class="reyohoho-extension-popout-root">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ReYohoho — Чат</title>
+</head>
+<body class="reyohoho-extension-popout">
+  <div id="reyohoho-popout-root" class="watch-party-ui reyohoho-chat-popout-panel">
+    <div id="reyohoho-popout-header" class="wp-header reyohoho-popout-header"></div>
+    <div id="wp-chat-messages" class="wp-chat-messages"></div>
+    <div class="wp-chat-input-wrapper">
+      <div class="reyohoho-input-shell">
+        <div id="reyohoho-popout-input-mirror" class="reyohoho-input-mirror" aria-hidden="true"></div>
+        <input id="wp-chat-input" class="wp-chat-input reyohoho-input-mirror-field" type="text" placeholder="Написать сообщение..." autocomplete="off" />
+        <div id="reyohoho-popout-compose-hint" class="reyohoho-compose-preview-hint" hidden></div>
+      </div>
+      <button id="wp-chat-send" class="wp-chat-send" type="button" aria-label="Отправить">➤</button>
+    </div>
+  </div>
+  <div id="reyohoho-popout-status" class="reyohoho-popout-status" hidden></div>
+  <script>
+    (function () {
+      function loadExtensionScript(path) {
+        return new Promise(function (resolve, reject) {
+          var script = document.createElement('script');
+          script.src = chrome.runtime.getURL(path);
+          script.onload = resolve;
+          script.onerror = function () {
+            reject(new Error('ERR_FILE_NOT_FOUND: ' + path));
+          };
+          document.head.append(script);
+        });
+      }
+
+      loadExtensionScript('shared/chat-core.js')
+        .then(function () {
+          return loadExtensionScript('chat-popout.js');
+        })
+        .catch(function (error) {
+          document.body.textContent =
+            'Не удалось загрузить файлы расширения (' + error.message + '). ' +
+            'Переустановите ReYohoho Chat из полной копии проекта.';
+          console.error('[ReYohoho Chat]', error);
+        });
+    })();
+  </script>
+</body>
+</html>

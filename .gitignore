@@ -1,5 +1,7 @@
 node_modules/
-*.html
+site.html
+site-full.html
+page.html
 7tv-global.json
 bttv-global.json
 ffz-global.json
