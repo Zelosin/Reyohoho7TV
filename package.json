@@ -1,0 +1,11 @@
+{
+  "name": "reyohoho-chat",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "generate:emotes": "node scripts/generate-emotes.mjs",
+    "generate:icons": "node scripts/generate-icons.mjs",
+    "generate": "npm run generate:emotes && npm run generate:icons"
+  }
+}

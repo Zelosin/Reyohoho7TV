@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "ReYohoho Chat",
+  "description": "Pop-out chat, 7TV emotes, and message history for ReYohoho watch together rooms.",
+  "version": "1.0.0",
+  "author": "ReYohoho Community",
+  "homepage_url": "https://reyohoho.com",
+  "icons": {
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "windows"
+  ],
+  "host_permissions": [
+    "https://reyohoho.com/*",
+    "https://*.reyohoho.com/*",
+    "https://7tv.io/*",
+    "https://cdn.7tv.app/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://reyohoho.com/*",
+        "https://*.reyohoho.com/*"
+      ],
+      "js": [
+        "shared/chat-core.js",
+        "content/main.js"
+      ],
+      "css": [
+        "content/styles.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/*"
+      ],
+      "matches": [
+        "https://reyohoho.com/*",
+        "https://*.reyohoho.com/*"
+      ]
+    }
+  ]
+}

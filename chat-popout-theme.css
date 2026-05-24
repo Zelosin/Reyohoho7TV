@@ -1,0 +1,163 @@
+/* Fallback watch-party chat theme for extension pop-out (site CSS is synced separately). */
+
+.reyohoho-extension-popout .watch-party-ui {
+  box-sizing: border-box;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #e8e8e8;
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.reyohoho-extension-popout .watch-party-ui *,
+.reyohoho-extension-popout .watch-party-ui *::before,
+.reyohoho-extension-popout .watch-party-ui *::after {
+  box-sizing: border-box;
+}
+
+.reyohoho-extension-popout .wp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #181818;
+  min-height: 42px;
+}
+
+.reyohoho-extension-popout .wp-header h3,
+.reyohoho-extension-popout .wp-header .wp-title,
+.reyohoho-extension-popout .wp-header-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.reyohoho-extension-popout .wp-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.reyohoho-extension-popout .wp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ddd;
+  cursor: pointer;
+}
+
+.reyohoho-extension-popout .wp-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.reyohoho-extension-popout .wp-content,
+.reyohoho-extension-popout .wp-section,
+.reyohoho-extension-popout .wp-chat {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.reyohoho-extension-popout .wp-chat-messages {
+  padding: 10px 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #111;
+}
+
+.reyohoho-extension-popout .wp-chat-message {
+  margin-bottom: 8px;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.reyohoho-extension-popout .wp-chat-message.system {
+  opacity: 0.75;
+  font-style: italic;
+  color: #aaa;
+}
+
+.reyohoho-extension-popout .wp-chat-username {
+  font-weight: 600;
+  margin-right: 6px;
+  color: #a8b4ff;
+}
+
+.reyohoho-extension-popout .wp-chat-text {
+  color: #ececec;
+}
+
+.reyohoho-extension-popout .wp-chat-input-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: #181818;
+}
+
+.reyohoho-extension-popout .wp-chat-input,
+.reyohoho-extension-popout #wp-chat-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: #222;
+  color: #fff;
+  font: inherit;
+  outline: none;
+}
+
+.reyohoho-extension-popout .wp-chat-input:focus,
+.reyohoho-extension-popout #wp-chat-input:focus {
+  border-color: #667eea;
+}
+
+.reyohoho-extension-popout .wp-chat-send {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 8px;
+  background: #667eea;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.reyohoho-extension-popout .wp-chat-send:hover {
+  background: #7588f0;
+}
+
+.reyohoho-extension-popout .reyohoho-input-shell {
+  flex: 1;
+  min-width: 0;
+}
+
+.reyohoho-extension-popout .reyohoho-compose-preview-hint {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: calc(100% + 4px);
+}
+
+.reyohoho-extension-popout .wp-viewers,
+.reyohoho-extension-popout .wp-status,
+.reyohoho-extension-popout .wp-room-info {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.reyohoho-extension-popout img {
+  max-width: 100%;
+}

@@ -1,0 +1,150 @@
+.reyohoho-ext-popout-btn {
+  flex: 0 0 auto;
+  align-self: center;
+}
+
+.reyohoho-ext-popout-btn svg {
+  display: block;
+}
+
+.reyohoho-emote-wrap {
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+  line-height: 0;
+  cursor: help;
+}
+
+.reyohoho-emote-tooltip {
+  position: fixed;
+  z-index: 2147483647;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.2;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 6px));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.reyohoho-emote-tooltip[hidden] {
+  display: none;
+}
+
+.reyohoho-compose-preview-hint {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: calc(100% + 4px);
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.2;
+  text-align: center;
+  pointer-events: none;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.reyohoho-compose-preview-hint[hidden] {
+  display: none;
+}
+
+.reyohoho-emote {
+  display: inline-block;
+  height: 1.4em;
+  width: auto;
+  vertical-align: middle;
+  margin: 0 1px;
+  object-fit: contain;
+}
+
+.reyohoho-chat-link {
+  color: #8ab4ff;
+  text-decoration: underline;
+  word-break: break-all;
+  cursor: pointer;
+}
+
+.reyohoho-chat-link:hover {
+  color: #aecbfa;
+}
+
+.reyohoho-input-shell {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.reyohoho-input-mirror {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  line-height: normal;
+  font-family: inherit;
+  white-space: pre;
+  overflow: hidden;
+  pointer-events: none;
+  word-break: break-word;
+}
+
+.reyohoho-input-mirror-field {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  background: transparent !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+  caret-color: #fff;
+}
+
+.reyohoho-input-mirror-field::placeholder {
+  color: #666 !important;
+  -webkit-text-fill-color: #666;
+}
+
+.reyohoho-input-mirror-field:focus {
+  border-color: #667eea;
+}
+
+.reyohoho-input-mirror .reyohoho-emote {
+  height: 1.35em;
+  vertical-align: -0.2em;
+}
+
+.reyohoho-host-popout-hidden {
+  opacity: 0.02 !important;
+  user-select: none !important;
+}
+
+.reyohoho-host-popout-hidden .wp-header,
+.reyohoho-host-popout-hidden .wp-header *,
+.reyohoho-host-popout-hidden .reyohoho-ext-popout-btn {
+  opacity: 1 !important;
+  user-select: auto !important;
+  pointer-events: auto !important;
+}
+
+.reyohoho-host-popout-hidden .wp-chat-messages,
+.reyohoho-host-popout-hidden .wp-chat-input-wrapper,
+.reyohoho-host-popout-hidden .wp-content {
+  pointer-events: none !important;
+}
+
+.watch-party-ui #wp-minimize,
+.watch-party-ui [title="Свернуть"] {
+  display: none !important;
+}
