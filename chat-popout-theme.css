@@ -2,6 +2,8 @@
 
 .reyohoho-extension-popout .watch-party-ui {
   box-sizing: border-box;
+  width: 100%;
+  max-width: none;
   font-size: 13px;
   line-height: 1.4;
   color: #e8e8e8;

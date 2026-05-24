@@ -36,6 +36,39 @@
   let lastAppliedMessageCount = 0;
   const loadedThemeUrls = new Set();
   let inlineThemeStyleEl = null;
+  let layoutFixStyleEl = null;
+
+  const POPOUT_LAYOUT_FIX_CSS = `
+.reyohoho-extension-popout .reyohoho-chat-popout-panel,
+.reyohoho-extension-popout #reyohoho-popout-root,
+.reyohoho-extension-popout .watch-party-ui {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  max-height: none !important;
+  left: 0 !important;
+  right: 0 !important;
+}
+.reyohoho-extension-popout .reyohoho-popout-header,
+.reyohoho-extension-popout .wp-header,
+.reyohoho-extension-popout .wp-chat-messages,
+.reyohoho-extension-popout .wp-chat-input-wrapper,
+.reyohoho-extension-popout .reyohoho-input-shell {
+  width: 100% !important;
+  max-width: none !important;
+}
+`.trim();
+
+  function ensurePopoutLayoutFixStyle() {
+    if (!layoutFixStyleEl) {
+      layoutFixStyleEl = document.createElement('style');
+      layoutFixStyleEl.id = 'reyohoho-popout-layout-fix';
+      layoutFixStyleEl.textContent = POPOUT_LAYOUT_FIX_CSS;
+    }
+
+    document.head.append(layoutFixStyleEl);
+  }
 
   const popoutChat = ReYohohoChat.createController({
     onSendPrepared: (prepared) => {
@@ -69,6 +102,8 @@
         inlineThemeStyleEl.textContent = payload.inlineThemeCss;
       }
     }
+
+    ensurePopoutLayoutFixStyle();
   }
 
   function showStatus(text) {
@@ -212,6 +247,7 @@
   });
 
   async function init() {
+    ensurePopoutLayoutFixStyle();
     connect();
 
     await Promise.all([popoutChat.loadEmotes(), popoutChat.loadHistory()]);
