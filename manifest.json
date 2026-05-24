@@ -42,14 +42,7 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "icons/*",
-        "chat-popout.html",
-        "chat-popout.js",
-        "chat-popout.css",
-        "chat-popout-theme.css",
-        "content/styles.css",
-        "shared/chat-core.js",
-        "src/data/seventv-emotes-fallback.json"
+        "icons/*"
       ],
       "matches": [
         "https://reyohoho.com/*",

@@ -19,31 +19,7 @@
     </div>
   </div>
   <div id="reyohoho-popout-status" class="reyohoho-popout-status" hidden></div>
-  <script>
-    (function () {
-      function loadExtensionScript(path) {
-        return new Promise(function (resolve, reject) {
-          var script = document.createElement('script');
-          script.src = chrome.runtime.getURL(path);
-          script.onload = resolve;
-          script.onerror = function () {
-            reject(new Error('ERR_FILE_NOT_FOUND: ' + path));
-          };
-          document.head.append(script);
-        });
-      }
-
-      loadExtensionScript('shared/chat-core.js')
-        .then(function () {
-          return loadExtensionScript('chat-popout.js');
-        })
-        .catch(function (error) {
-          document.body.textContent =
-            'Не удалось загрузить файлы расширения (' + error.message + '). ' +
-            'Переустановите ReYohoho Chat из полной копии проекта.';
-          console.error('[ReYohoho Chat]', error);
-        });
-    })();
-  </script>
+  <script src="shared/chat-core.js"></script>
+  <script src="chat-popout.js"></script>
 </body>
 </html>
