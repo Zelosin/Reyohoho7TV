@@ -38,6 +38,7 @@
 
     let resolveEmotesTimer = null;
     let resolveEmotesInFlight = false;
+    let resolveEmotesPending = false;
     let renderEmotesTimer = null;
 
 function escapeHtml(value) {
@@ -711,17 +712,43 @@ function lookupEmoteUrl(emoteMap, token) {
   return null;
 }
 
+function normalizeChatText(text) {
+  return (text ?? '').replace(/\s+/g, ' ').trim();
+}
+
+function clearStaleChatTextMetadata(element) {
+  if (!(element instanceof HTMLElement)) {
+    return;
+  }
+
+  const processed = element.querySelector('[data-reyohoho-emote-processed]');
+  const liveText = normalizeChatText(element.textContent ?? '');
+
+  if (processed) {
+    return;
+  }
+
+  if (element.dataset.reyohohoSourceText != null) {
+    const stored = normalizeChatText(element.dataset.reyohohoSourceText);
+    if (stored !== liveText) {
+      delete element.dataset.reyohohoSourceText;
+    }
+  }
+}
+
 function getChatTextSourceText(element) {
   if (!(element instanceof HTMLElement)) {
     return '';
   }
 
-  if (element.dataset.reyohohoSourceText != null) {
-    return element.dataset.reyohohoSourceText;
-  }
+  clearStaleChatTextMetadata(element);
 
   const processed = element.querySelector('[data-reyohoho-emote-processed]');
   if (processed) {
+    if (element.dataset.reyohohoSourceText != null) {
+      return element.dataset.reyohohoSourceText;
+    }
+
     return reconstructSourceFromProcessedSpan(processed);
   }
 
@@ -839,6 +866,11 @@ function collectUnknownEmoteTokensFromText(text, emoteMap = getCombinedEmoteMap(
     if (lookupEmoteUrl(emoteMap, token)) {
       continue;
     }
+
+    if (!isEnglishWord(token)) {
+      continue;
+    }
+
     unknown.add(token);
   }
 
@@ -894,7 +926,12 @@ async function resolveEmoteNames(names) {
 }
 
 async function resolveMissingEmotes(container) {
-  if (!container || resolveEmotesInFlight) {
+  if (!container) {
+    return;
+  }
+
+  if (resolveEmotesInFlight) {
+    resolveEmotesPending = true;
     return;
   }
 
@@ -905,26 +942,26 @@ async function resolveMissingEmotes(container) {
 
   resolveEmotesInFlight = true;
   try {
-    const unknownTokens = [...unknown];
-    await resolveEmoteNames(unknownTokens);
+    await resolveEmoteNames([...unknown]);
 
     const emoteMap = getCombinedEmoteMap();
-    const resolvedTokens = unknownTokens.filter((token) => lookupEmoteUrl(emoteMap, token));
-    if (resolvedTokens.length === 0) {
-      return;
-    }
-
     for (const element of container.querySelectorAll('.wp-chat-text')) {
-      const sourceText = getChatTextSourceText(element);
-      const needsRerender = resolvedTokens.some((token) => messageContainsAnyToken(sourceText, [token]));
+      clearStaleChatTextMetadata(element);
 
-      if (needsRerender) {
-        resetChatTextElement(element);
-        processMessageElement(element, emoteMap);
+      if (!messageHasUnrenderedEmotes(element, emoteMap)) {
+        continue;
       }
+
+      resetChatTextElement(element);
+      processChatTextElement(element, emoteMap);
     }
   } finally {
     resolveEmotesInFlight = false;
+
+    if (resolveEmotesPending) {
+      resolveEmotesPending = false;
+      scheduleResolveMissingEmotes(container);
+    }
   }
 }
 
@@ -964,6 +1001,8 @@ function processChatTextElement(element, emoteMap) {
   if (!(element instanceof HTMLElement)) {
     return;
   }
+
+  clearStaleChatTextMetadata(element);
 
   if (element.querySelector('[data-reyohoho-emote-processed]')) {
     if (messageHasUnrenderedEmotes(element, emoteMap)) {
