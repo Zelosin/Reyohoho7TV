@@ -18,13 +18,64 @@ const state = {
   popoutDisconnectTimer: null,
   globalPopoutWatcher: null,
   initialized: false,
+  extensionReloadNotified: false,
 };
 
+function isExtensionContextValid() {
+  try {
+    return Boolean(chrome.runtime?.id);
+  } catch {
+    return false;
+  }
+}
+
+function notifyExtensionReloadNeeded() {
+  if (state.extensionReloadNotified) {
+    return;
+  }
+
+  state.extensionReloadNotified = true;
+  console.warn('[ReYohoho Chat] Extension was reloaded. Refresh the room page (F5) to reconnect.');
+}
+
+function disconnectPopoutHostPort() {
+  if (!state.popoutHostPort) {
+    return;
+  }
+
+  try {
+    state.popoutHostPort.disconnect();
+  } catch {
+    // Port already disconnected.
+  }
+
+  state.popoutHostPort = null;
+}
+
 function sendMessage(message) {
+  if (!isExtensionContextValid()) {
+    notifyExtensionReloadNeeded();
+    return Promise.resolve({ ok: false, error: 'Extension context invalidated' });
+  }
+
   return new Promise((resolve) => {
-    chrome.runtime.sendMessage(message, (response) => {
-      resolve(response ?? { ok: false, error: chrome.runtime.lastError?.message });
-    });
+    try {
+      chrome.runtime.sendMessage(message, (response) => {
+        const error = chrome.runtime.lastError?.message;
+        if (error?.includes('Extension context invalidated')) {
+          disconnectPopoutHostPort();
+          notifyExtensionReloadNeeded();
+          resolve({ ok: false, error });
+          return;
+        }
+
+        resolve(response ?? { ok: false, error });
+      });
+    } catch (error) {
+      disconnectPopoutHostPort();
+      notifyExtensionReloadNeeded();
+      resolve({ ok: false, error: String(error) });
+    }
   });
 }
 
@@ -133,7 +184,10 @@ async function openPopoutWindow() {
   const session = state.popoutSession;
 
   cancelPopoutDisconnect();
-  ensurePopoutHostPort();
+
+  if (!ensurePopoutHostPort()) {
+    return;
+  }
 
   const rect = state.chatPanel?.getBoundingClientRect();
   const left = rect ? Math.round(window.screenX + rect.right + 12) : undefined;
@@ -148,7 +202,11 @@ async function openPopoutWindow() {
   });
 
   if (!response?.ok) {
-    console.warn('[ReYohoho Chat] Failed to open pop-out:', response?.error);
+    if (response?.error?.includes('Extension context invalidated')) {
+      notifyExtensionReloadNeeded();
+    } else {
+      console.warn('[ReYohoho Chat] Failed to open pop-out:', response?.error);
+    }
     return;
   }
 
@@ -163,22 +221,37 @@ async function openPopoutWindow() {
 }
 
 function ensurePopoutHostPort() {
-  if (state.popoutHostPort) {
-    return;
+  if (!isExtensionContextValid()) {
+    disconnectPopoutHostPort();
+    notifyExtensionReloadNeeded();
+    return false;
   }
 
-  const port = chrome.runtime.connect({ name: 'reyohoho-popout-host' });
-  state.popoutHostPort = port;
+  if (state.popoutHostPort) {
+    return true;
+  }
 
-  port.onMessage.addListener(handlePopoutPortMessage);
-  port.onDisconnect.addListener(() => {
-    state.popoutHostPort = null;
-    if (state.popoutOpen) {
-      restoreChatPanelAfterPopout();
-      state.popoutOpen = false;
-      stopPopoutHostSync();
-    }
-  });
+  try {
+    const port = chrome.runtime.connect({ name: 'reyohoho-popout-host' });
+    state.popoutHostPort = port;
+
+    port.onMessage.addListener(handlePopoutPortMessage);
+    port.onDisconnect.addListener(() => {
+      state.popoutHostPort = null;
+      if (state.popoutOpen) {
+        restoreChatPanelAfterPopout();
+        state.popoutOpen = false;
+        stopPopoutHostSync();
+      }
+    });
+
+    return true;
+  } catch (error) {
+    disconnectPopoutHostPort();
+    notifyExtensionReloadNeeded();
+    console.warn('[ReYohoho Chat] Failed to connect pop-out host port:', error);
+    return false;
+  }
 }
 
 function refreshChatDomRefs() {
@@ -237,15 +310,21 @@ function buildPopoutSyncPayload(options = {}) {
 }
 
 function pushPopoutFullSync() {
-  if (!state.popoutHostPort) {
+  if (!ensurePopoutHostPort()) {
     return;
   }
 
   state.popoutOpen = true;
-  state.popoutHostPort.postMessage({
-    type: 'SYNC_TO_POPOUT',
-    payload: buildPopoutSyncPayload({ replaceAllMessages: true }),
-  });
+  try {
+    state.popoutHostPort.postMessage({
+      type: 'SYNC_TO_POPOUT',
+      payload: buildPopoutSyncPayload({ replaceAllMessages: true }),
+    });
+  } catch (error) {
+    disconnectPopoutHostPort();
+    notifyExtensionReloadNeeded();
+    console.warn('[ReYohoho Chat] Failed to sync pop-out:', error);
+  }
 }
 
 function sanitizeHeaderHtmlForPopout(html) {
@@ -451,12 +530,28 @@ function pushPopoutSync() {
     return;
   }
 
+  if (!isExtensionContextValid()) {
+    disconnectPopoutHostPort();
+    notifyExtensionReloadNeeded();
+    return;
+  }
+
   clearTimeout(state.popoutSyncTimer);
   state.popoutSyncTimer = setTimeout(() => {
-    state.popoutHostPort?.postMessage({
-      type: 'SYNC_TO_POPOUT',
-      payload: buildPopoutSyncPayload({ replaceAllMessages: false }),
-    });
+    if (!state.popoutHostPort) {
+      return;
+    }
+
+    try {
+      state.popoutHostPort.postMessage({
+        type: 'SYNC_TO_POPOUT',
+        payload: buildPopoutSyncPayload({ replaceAllMessages: false }),
+      });
+    } catch (error) {
+      disconnectPopoutHostPort();
+      notifyExtensionReloadNeeded();
+      console.warn('[ReYohoho Chat] Failed to sync pop-out:', error);
+    }
   }, 16);
 }
 
